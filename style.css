@@ -26,6 +26,7 @@ table {
 	border-collapse: collapse;
 	border: black 3px solid;
 	margin-top: 20px;
+	margin-bottom: 20px;
 }
 
 .cell, .symbol {
@@ -35,4 +36,13 @@ table {
 	font-size: 120px;
 	font-family: "Comic Sans MS", "Comic Sans", "cursive";
 	text-align: center;
+}
+
+button{
+	height: 30px;
+	width: 30px;
+}
+
+#message-winner {
+	display: none;
 }

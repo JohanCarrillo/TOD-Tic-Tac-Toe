@@ -18,14 +18,14 @@ function gameBoardFunc() {
 
 		// need to add another condition first to check if the cells are used, because at this point all cells content are empty forhence are all equall and there is always a winner
 		if (
-			(board[0].textContent === board[1].textContent && board[1].textContent === board[2].textContent) ||  // first row
-			(board[3].textContent === board[4].textContent && board[4].textContent === board[5].textContent) ||  // second row
-			(board[6].textContent === board[7].textContent && board[7].textContent === board[8].textContent) ||  // third row
-			(board[0].textContent === board[3].textContent && board[3].textContent === board[6].textContent) ||  // first column
-			(board[1].textContent === board[4].textContent && board[4].textContent === board[7].textContent) ||  // second column
-			(board[2].textContent === board[5].textContent && board[5].textContent === board[8].textContent) ||  // third column
-			(board[0].textContent === board[4].textContent && board[4].textContent === board[8].textContent) ||  // diagonal left
-			(board[2].textContent === board[4].textContent && board[4].textContent === board[6].textContent)		 // diagonal right
+			(board[0].textContent === board[1].textContent && board[1].textContent === board[2].textContent && board[0].textContent !== '') ||  // first row
+			(board[3].textContent === board[4].textContent && board[4].textContent === board[5].textContent && board[3].textContent !== '') ||  // second row
+			(board[6].textContent === board[7].textContent && board[7].textContent === board[8].textContent && board[6].textContent !== '') ||  // third row
+			(board[0].textContent === board[3].textContent && board[3].textContent === board[6].textContent && board[0].textContent !== '') ||  // first column
+			(board[1].textContent === board[4].textContent && board[4].textContent === board[7].textContent && board[1].textContent !== '') ||  // second column
+			(board[2].textContent === board[5].textContent && board[5].textContent === board[8].textContent && board[2].textContent !== '') ||  // third column
+			(board[0].textContent === board[4].textContent && board[4].textContent === board[8].textContent && board[0].textContent !== '') ||  // diagonal left
+			(board[2].textContent === board[4].textContent && board[4].textContent === board[6].textContent && board[2].textContent !== '')		 // diagonal right
 		) {
 			return true;
 		} else {
@@ -39,9 +39,8 @@ function gameBoardFunc() {
 			cell is not occuped yet, mark every used cell with a new class named "used". 
 			return true if the cell was changed, otherwise false, this is used to end 
 			current player's turn. */
-		if (!cell.classList.contains('used')) {  // if cell is empty can write
+		if (cell.textContent === '') {  // if cell is empty can write
 			cell.textContent = player.getSymbol();
-			cell.classList.add('used');  // every used has this class
 			return true;
 		} else {
 			return false;
@@ -52,22 +51,46 @@ function gameBoardFunc() {
 }
 
 function startGame() {
-	let player = createPlayer('Player', 'X');
-	let computer = createPlayer('Computer', 'O');
+	let player = createPlayer('Player', 'O');
+	let computer = createPlayer('Computer', 'X');
 	
 	return [player, computer];
 };
 
-(() => {
+function reset(board, players) {
 	
+	// clear board content
+	for (let element of board) {
+		element.textContent = '';
+	}
+
+	players[0].numberOfMovements = 0;
+	players[1].numberOfMovements = 0;
+
+	// show board
+	document.querySelector('#game-board').style.display = 'block';
+	document.querySelector('h3').style.display = 'block';
+	document.querySelector('#messages').style.display = 'block';
+	document.querySelector('#message-winner').style.display = 'none';
+}
+
+(() => {
+	const board = document.querySelectorAll('.cell');
 	const players = startGame();  // create players
 	const gameBoard = gameBoardFunc();  // instance game board
+	const messages = document.querySelector('#messages');  // used to show who's turn is
+	const messageWinner = document.querySelector('#message-winner');
+	const resetButton = document.querySelector('button');
+	resetButton.addEventListener('click', () => {reset(board, players)});
+	
+
 	// select randomly first turn
 	let counter = Math.floor(Math.random() * 2);
 	let currentPlayer = players[counter];
-	const messages = document.querySelector('#messages');
-	const board = document.querySelectorAll('.cell');
-	// add functionality to the board
+	messages.textContent = `${currentPlayer.getName()}' turn`;
+	
+	
+	// add functionality to board cells 
 	board.forEach(element => element.addEventListener('click', () => {
 
 		// if element was valid, write and end turn
@@ -75,20 +98,40 @@ function startGame() {
 			currentPlayer.numberOfMovements++;
 			// check for winner
 			if (gameBoard.checkWinner(board)) {
+				// hide board
+				document.querySelector('#game-board').style.display = 'none';
+				document.querySelector('h3').style.display = 'none';
+				messages.style.display = 'none';
 				// announce winner
-				messages.textContent = `${currentPlayer.getName()} is the winner!`;
-				// end game
-				// restart board?
+				messageWinner.textContent = `${currentPlayer.getName()} is the winner!`;
+				messageWinner.style.display = 'block';
+				
+				// select who starts now
+				counter = Math.floor(Math.random() * 2);  // reset counter
+				currentPlayer = players[counter];
+				messages.textContent = `${currentPlayer.getName()}' turn`;
 				
 			} else if (players[0].numberOfMovements + players[1].numberOfMovements === 9) {  // board full
-				// announce draw
-				// end game
-				// restard board?
+				
+				// hide board
+				document.querySelector('#game-board').style.display = 'none';
+				document.querySelector('h3').style.display = 'none';
+				messages.style.display = 'none';
+				// announce winner
+				messageWinner.textContent = 'It\'s a draw!';
+				messageWinner.style.display = 'block';
+
+				// select who starts now
+				counter = Math.floor(Math.random() * 2);  // reset counter
+				currentPlayer = players[counter];
+				messages.textContent = `${currentPlayer.getName()}' turn`;
+			} else {  // no end game
+				// change turn
+				counter++;
+				currentPlayer = players[counter % 2]
+				console.log(currentPlayer.getName());
+				messages.textContent = `${currentPlayer.getName()}' turn`;
 			}
-			// change turn
-			counter++;
-			currentPlayer = players[counter % 2]
-			console.log(currentPlayer.getName());
 		}
 
 	}))
