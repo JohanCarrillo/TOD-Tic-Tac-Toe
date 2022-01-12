@@ -1,0 +1,38 @@
+body{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	padding: 20px;
+}
+/* 
+#header {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+#symbol-list .symbol{
+	display:inline-flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: nowrap;
+	margin: 10px;
+} */
+
+table {
+	border-collapse: collapse;
+	border: black 3px solid;
+	margin-top: 20px;
+}
+
+.cell, .symbol {
+	border: black 1px solid;
+	width: 150px;
+	height: 150px;
+	font-size: 120px;
+	font-family: "Comic Sans MS", "Comic Sans", "cursive";
+	text-align: center;
+}
