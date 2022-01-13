@@ -6,8 +6,22 @@ function createPlayer(name, symbol) {
 	const getName = () => _name;
 	const getSymbol = () => _symbol;
 
-
 	return {getName, getSymbol, numberOfMovements};
+}
+
+function createComputer(name, symbol) {
+
+	// inherate from createPlayer
+	const father = createPlayer(name, symbol);
+
+	// function to make a play
+	const play = (board) => {
+		const choose = Math.floor(Math.random() * 9);
+		board[choose].click();
+		console.log('computer click: ' + choose);
+	}
+
+	return Object.assign({}, {play}, father);
 }
 
 function gameBoardFunc() {
@@ -52,7 +66,8 @@ function gameBoardFunc() {
 
 function startGame() {
 	let player = createPlayer('Player', 'O');
-	let computer = createPlayer('Computer', 'X');
+	let computer = createComputer('Computer', 'X');
+	console.log(computer);
 	
 	return [player, computer];
 };
@@ -72,10 +87,11 @@ function reset(board, players) {
 	document.querySelector('h3').style.display = 'block';
 	document.querySelector('#messages').style.display = 'block';
 	document.querySelector('#message-winner').style.display = 'none';
+	document.querySelector('button').style.display = 'none';
 }
 
 (() => {
-	const board = document.querySelectorAll('.cell');
+	const board = document.querySelectorAll('.cell');  // charge all cells
 	const players = startGame();  // create players
 	const gameBoard = gameBoardFunc();  // instance game board
 	const messages = document.querySelector('#messages');  // used to show who's turn is
@@ -88,7 +104,12 @@ function reset(board, players) {
 	let counter = Math.floor(Math.random() * 2);
 	let currentPlayer = players[counter];
 	messages.textContent = `${currentPlayer.getName()}' turn`;
-	
+	// make the computer play by itself if it starts
+	if (currentPlayer.getName() === players[1].getName()) {
+		setTimeout(function() {  // add 1 second delay
+			currentPlayer.play(board);
+		}, 300)
+	}
 	
 	// add functionality to board cells 
 	board.forEach(element => element.addEventListener('click', () => {
@@ -105,11 +126,19 @@ function reset(board, players) {
 				// announce winner
 				messageWinner.textContent = `${currentPlayer.getName()} is the winner!`;
 				messageWinner.style.display = 'block';
+				// show reset button
+				resetButton.style.display = 'block';
 				
 				// select who starts now
 				counter = Math.floor(Math.random() * 2);  // reset counter
 				currentPlayer = players[counter];
 				messages.textContent = `${currentPlayer.getName()}' turn`;
+				if (currentPlayer.getName() === players[1].getName()) {  // make the computer play by itself
+					setTimeout( () => {  // add 1 second delay
+						console.log('computer choice');
+						currentPlayer.play(board);
+					}, 300);
+				}
 				
 			} else if (players[0].numberOfMovements + players[1].numberOfMovements === 9) {  // board full
 				
@@ -120,18 +149,37 @@ function reset(board, players) {
 				// announce winner
 				messageWinner.textContent = 'It\'s a draw!';
 				messageWinner.style.display = 'block';
+				// show reset button
+				resetButton.style.display = 'block';
 
 				// select who starts now
 				counter = Math.floor(Math.random() * 2);  // reset counter
 				currentPlayer = players[counter];
 				messages.textContent = `${currentPlayer.getName()}' turn`;
+				if (currentPlayer.getName() === players[1].getName()) {  // make the computer play by itself
+					setTimeout( () => {  // add 1 second delay
+						console.log('computer choice');
+						currentPlayer.play(board);
+					}, 300);
+				}
+
 			} else {  // no end game
 				// change turn
 				counter++;
-				currentPlayer = players[counter % 2]
-				console.log(currentPlayer.getName());
+				currentPlayer = players[counter % 2];
 				messages.textContent = `${currentPlayer.getName()}' turn`;
+				if (currentPlayer.getName() === players[1].getName()) {  // make the computer play by itself
+					setTimeout( () => {  // add 1 second delay
+						console.log('computer choice');
+						currentPlayer.play(board);
+					}, 300);
+				}
 			}
+		} else if (currentPlayer.getName() === players[1].getName()) {  // make the computer play by itself
+			setTimeout( () => {  // add 1 second delay
+				console.log('computer choice');
+				currentPlayer.play(board);
+			}, 300);
 		}
 
 	}))

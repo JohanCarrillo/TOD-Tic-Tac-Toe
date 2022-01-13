@@ -39,10 +39,23 @@ table {
 }
 
 button{
-	height: 30px;
-	width: 30px;
+	display: none;
+	width: 100px;
+	height: 100px;
+	margin-top: 30px;
+	font-size: 25px;
+	font-weight: bolder;
+
 }
 
 #message-winner {
 	display: none;
+	font-size: 30px;
+	color: blue;
+	margin-top: 30px;
+}
+
+#messages {
+	color: red;
+	font-size: 20px;
 }
