@@ -1,4 +1,7 @@
+// ------------------------- FUNCTION FACTORIES ------------------------------
 function createPlayer(name, symbol) {
+	// used to create player objects
+
 	const _name = name;
 	const _symbol = symbol;
 	let numberOfMovements = 0;
@@ -10,6 +13,7 @@ function createPlayer(name, symbol) {
 }
 
 function createComputer(name, symbol) {
+	// extends createPlayer to make the computer play by itself
 
 	// inherate from createPlayer
 	const father = createPlayer(name, symbol);
@@ -30,7 +34,6 @@ function gameBoardFunc() {
 	function checkWinner(board) {  // input is array of cell nodes
 		// check if there is a winner, if there is return true, otherwise false
 
-		// need to add another condition first to check if the cells are used, because at this point all cells content are empty forhence are all equall and there is always a winner
 		if (
 			(board[0].textContent === board[1].textContent && board[1].textContent === board[2].textContent && board[0].textContent !== '') ||  // first row
 			(board[3].textContent === board[4].textContent && board[4].textContent === board[5].textContent && board[3].textContent !== '') ||  // second row
@@ -51,8 +54,9 @@ function gameBoardFunc() {
 	function writeOnBoard(cell, player) {  // input is cell node and current player
 		/* this function writes on the board the current player symbol if the selected
 			cell is not occuped yet, mark every used cell with a new class named "used". 
-			return true if the cell was changed, otherwise false, this is used to end 
+			returns true if the cell was changed, otherwise false, this is used to end 
 			current player's turn. */
+
 		if (cell.textContent === '') {  // if cell is empty can write
 			cell.textContent = player.getSymbol();
 			return true;
@@ -65,20 +69,23 @@ function gameBoardFunc() {
 }
 
 function startGame() {
+	// used to initialize the players
+
 	let player = createPlayer('Player', 'O');
 	let computer = createComputer('Computer', 'X');
-	console.log(computer);
 	
 	return [player, computer];
-};
+}
 
 function reset(board, players) {
-	
+	// clear the game board and the movements history
+
 	// clear board content
 	for (let element of board) {
 		element.textContent = '';
 	}
 
+	// clear movements history
 	players[0].numberOfMovements = 0;
 	players[1].numberOfMovements = 0;
 
@@ -90,23 +97,24 @@ function reset(board, players) {
 	document.querySelector('button').style.display = 'none';
 }
 
+// ------------------------- GAME EXECUTION ------------------------------
 (() => {
+	// initializations
 	const board = document.querySelectorAll('.cell');  // charge all cells
 	const players = startGame();  // create players
 	const gameBoard = gameBoardFunc();  // instance game board
 	const messages = document.querySelector('#messages');  // used to show who's turn is
-	const messageWinner = document.querySelector('#message-winner');
+	const messageWinner = document.querySelector('#message-winner');  // used to show the result of the match
 	const resetButton = document.querySelector('button');
 	resetButton.addEventListener('click', () => {reset(board, players)});
 	
-
 	// select randomly first turn
 	let counter = Math.floor(Math.random() * 2);
 	let currentPlayer = players[counter];
 	messages.textContent = `${currentPlayer.getName()}' turn`;
 	// make the computer play by itself if it starts
 	if (currentPlayer.getName() === players[1].getName()) {
-		setTimeout(function() {  // add 1 second delay
+		setTimeout(function() {  // add 0.3 seconds delay
 			currentPlayer.play(board);
 		}, 300)
 	}
@@ -117,6 +125,7 @@ function reset(board, players) {
 		// if element was valid, write and end turn
 		if (gameBoard.writeOnBoard(element, currentPlayer)) {  // write on element
 			currentPlayer.numberOfMovements++;
+
 			// check for winner
 			if (gameBoard.checkWinner(board)) {
 				// hide board
@@ -128,13 +137,13 @@ function reset(board, players) {
 				messageWinner.style.display = 'block';
 				// show reset button
 				resetButton.style.display = 'block';
-				
 				// select who starts now
 				counter = Math.floor(Math.random() * 2);  // reset counter
 				currentPlayer = players[counter];
 				messages.textContent = `${currentPlayer.getName()}' turn`;
+				// if computer play first
 				if (currentPlayer.getName() === players[1].getName()) {  // make the computer play by itself
-					setTimeout( () => {  // add 1 second delay
+					setTimeout( () => {  // add 0.3 seconds delay
 						console.log('computer choice');
 						currentPlayer.play(board);
 					}, 300);
@@ -151,32 +160,34 @@ function reset(board, players) {
 				messageWinner.style.display = 'block';
 				// show reset button
 				resetButton.style.display = 'block';
-
 				// select who starts now
 				counter = Math.floor(Math.random() * 2);  // reset counter
 				currentPlayer = players[counter];
 				messages.textContent = `${currentPlayer.getName()}' turn`;
+				// ifcomputer play first
 				if (currentPlayer.getName() === players[1].getName()) {  // make the computer play by itself
-					setTimeout( () => {  // add 1 second delay
+					setTimeout( () => {  // add 0.3 seconds delay
 						console.log('computer choice');
 						currentPlayer.play(board);
 					}, 300);
 				}
 
-			} else {  // no end game
+			} else {  // no end game, just change turn
+
 				// change turn
 				counter++;
-				currentPlayer = players[counter % 2];
+				currentPlayer = players[counter % 2];  // change player
 				messages.textContent = `${currentPlayer.getName()}' turn`;
+				// when computer's turn
 				if (currentPlayer.getName() === players[1].getName()) {  // make the computer play by itself
-					setTimeout( () => {  // add 1 second delay
+					setTimeout( () => {  // add 0.3 seconds delay
 						console.log('computer choice');
 						currentPlayer.play(board);
 					}, 300);
 				}
 			}
-		} else if (currentPlayer.getName() === players[1].getName()) {  // make the computer play by itself
-			setTimeout( () => {  // add 1 second delay
+		} else if (currentPlayer.getName() === players[1].getName()) { // if computer movement was not valid repeat
+			setTimeout( () => {  // add 0.3 seconds delay
 				console.log('computer choice');
 				currentPlayer.play(board);
 			}, 300);
